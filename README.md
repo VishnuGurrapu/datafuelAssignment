@@ -266,3 +266,65 @@ We **don't** care about UI, Docker, cloud deployment, or extra features.
 - **Do I need a camera?** No. Screen + voice is enough.
 - **I can't finish in time.** Submit what you have, with `NOTES.md` explaining what's left.
 - **Questions?** vansh@datafuel.tech. Asking is a good sign, not a bad one.
+
+---
+
+## Setup and Run Instructions
+
+### 1. Environment Setup
+```bash
+# Clone and navigate to repository
+cd candidate
+
+# Create and activate Python 3.10+ virtual environment
+python -m venv .venv
+
+# On Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# On Linux / macOS:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Start the QuickMart Mock Portal
+In Terminal 1 (keep it running):
+```bash
+python mock_portal.py
+```
+*QuickMart will be running on `http://127.0.0.1:8765`.*
+
+### 3. Run the Inventory Sweeps
+In Terminal 2, execute the sweeps (each sweep takes ~40–60 seconds):
+```bash
+python sweep.py --as-of 2026-09-27T04:30:00Z
+python sweep.py --as-of 2026-09-27T10:30:00Z
+python sweep.py --as-of 2026-09-27T19:00:00Z
+python sweep.py --as-of 2026-09-28T04:30:00Z
+python sweep.py --as-of 2026-09-28T10:30:00Z
+python sweep.py --as-of 2026-09-28T18:40:00Z
+```
+
+### 4. Start the Reporting API
+```bash
+uvicorn app:app --host 127.0.0.1 --port 8000 --reload
+```
+*API docs will be available at `http://127.0.0.1:8000/docs`.*
+
+### 5. Query Example /osa Endpoints
+```bash
+# Mumbai for 2026-09-28
+curl "http://127.0.0.1:8000/osa?city=Mumbai&date=2026-09-28"
+
+# Delhi for 2026-09-28
+curl "http://127.0.0.1:8000/osa?city=Delhi&date=2026-09-28"
+
+# Bengaluru for 2026-09-28
+curl "http://127.0.0.1:8000/osa?city=Bengaluru&date=2026-09-28"
+```
+
+### 6. Run the Automated Test Suite
+```bash
+pytest -v tests/
+```
